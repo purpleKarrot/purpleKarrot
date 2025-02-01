@@ -1,0 +1,24 @@
+# Visit https://github.com/lowlighter/metrics#-documentation for full reference
+name: Metrics
+on:
+  push: { branches: ["master"] }
+  schedule: [{ cron: "0 0 * * *" }]
+  workflow_dispatch:
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lowlighter/metrics@latest
+        with:
+          filename: metrics.svg
+          token: ${{ secrets.METRICS_TOKEN }}
+          user: purpleKarrot
+          template: classic
+          base: header, activity, community, repositories, metadata
+          config_timezone: Europe/Zurich
+          output_action: gist
+          committer_gist: a19836bd3be1f84ca0ad9e7421f4170f
+
+          plugin_isocalendar: yes
+          plugin_languages: yes
+          plugin_lines: yes
