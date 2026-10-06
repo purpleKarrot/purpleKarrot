@@ -1,4 +1,4 @@
-"""Fix repository pagination in the pinned Metrics action before building it."""
+"""Patch pinned Metrics and layer the fix onto its official runtime image."""
 
 from pathlib import Path
 import sys
@@ -18,5 +18,12 @@ def patch(source: str) -> str:
 
 
 if __name__ == "__main__":
-    target = Path(sys.argv[1]) / "source/plugins/base/index.mjs"
+    checkout = Path(sys.argv[1])
+    target = checkout / "source/plugins/base/index.mjs"
     target.write_text(patch(target.read_text()))
+    # Reuse the working dependencies instead of rebuilding the old Dockerfile.
+    # The image version matches the pinned Metrics 3.34.0 source in metric.yml.
+    (checkout / "Dockerfile").write_text(
+        "FROM ghcr.io/lowlighter/metrics:v3.34\n"
+        "COPY source/plugins/base/index.mjs /metrics/source/plugins/base/index.mjs\n"
+    )
