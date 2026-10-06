@@ -8,9 +8,22 @@ jobs:
   metrics:
     runs-on: ubuntu-latest
     steps:
-      - uses: lowlighter/metrics@latest
+      - uses: actions/checkout@v4
+      - name: Check out Metrics
+        uses: actions/checkout@v4
+        with:
+          repository: lowlighter/metrics
+          ref: 65836723097537a54cd8eb90f61839426b4266b6 # Metrics 3.34.0
+          path: .metrics
+          persist-credentials: false
+      - name: Fix Metrics repository pagination
+        run: python3 .github/scripts/patch_metrics.py .metrics
+      - uses: ./.metrics
         with:
           debug: yes
+          use_prebuilt_image: no
+          repositories: 200
+          repositories_batch: 25
           filename: metrics.svg
           token: ${{ secrets.METRICS_TOKEN }}
           user: purpleKarrot
